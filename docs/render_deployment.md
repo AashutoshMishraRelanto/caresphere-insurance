@@ -56,11 +56,19 @@ We use the Infrastructure-as-Code `render.yaml` file to automate this setup, but
    - `JWT_SECRET`: (A long, random string)
 5. Click **Create Web Service**.
 
-## 4. Verification and Seeding
+## 4. Obtaining the Actual Generated URL
+After your deployment finishes, Render automatically assigns a publicly accessible URL to your Web Service. This is the Base URL you will use in Salesforce.
+
+**How to find it:**
+1. Open your Render Dashboard and click on your newly deployed Web Service (`caresphere-insurance`).
+2. Look at the top-left area of the screen, directly beneath the name of your service and your GitHub repository branch.
+3. You will see a clickable link that looks similar to:
+   `https://caresphere-insurance-xxxxx.onrender.com`
+4. This is your production Base URL. You can verify it by appending `/health` to the end of the URL and opening it in your browser (it should return `{"status": "UP"}`).
+
+## 5. Verification and Seeding
 1. Wait for the deployment to finish and show **Live**.
-2. Copy the public URL provided by Render (e.g., `https://caresphere-insurance.onrender.com`).
-3. To seed the database with 1,111+ records, you must run the seed script.
-   - In your Render dashboard, click the **Shell** tab for your Web Service.
-   - Run the command: `npm run seed`
+2. To seed the database with 1,111+ records, you must run the seed script.
+   - **For Paid Render Tiers:** Go to the **Shell** tab on Render and run `npm run seed`.
+   - **For Free Render Tiers:** Because Render disables the web shell on Free tiers, you can run the seed script locally from your computer by putting the `MONGO_URI` into your `.env` file and running `npm run seed` locally.
    - Wait for it to report `Successfully seeded ... policies.`
-4. Navigate to `https://caresphere-insurance.onrender.com/health` to verify it returns `{"status": "UP"}`.
