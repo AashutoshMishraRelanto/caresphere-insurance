@@ -34,7 +34,7 @@ const generatePolicies = (count) => {
     }
 
     policies.push({
-      policyNumber: `POL${faker.string.numeric(6)}`,
+      policyNumber: `POL${100000 + i}`,
       policyHolderName: faker.person.fullName(),
       provider,
       coverageStatus,
