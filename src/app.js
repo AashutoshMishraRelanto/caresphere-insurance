@@ -39,17 +39,6 @@ app.get('/health', (req, res) => {
   res.json({ status: 'UP' });
 });
 
-// Temporary Seed Route
-app.get('/seed-database-1234', async (req, res) => {
-  try {
-    const { seedDB } = require('./utils/seed');
-    const result = await seedDB();
-    res.json(result);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
 // Error Handling
 app.use(notFound);
 app.use(errorHandler);
