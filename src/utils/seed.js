@@ -55,8 +55,6 @@ const generatePolicies = (count) => {
 
 const seedDB = async () => {
   try {
-    await connectDB();
-
     console.log('Clearing database...');
     await User.deleteMany();
     await Policy.deleteMany();
@@ -75,11 +73,17 @@ const seedDB = async () => {
     await Policy.insertMany(policies);
     console.log(`Successfully seeded ${policies.length} policies.`);
 
-    process.exit();
+    return { success: true, message: `Successfully seeded ${policies.length} policies.` };
   } catch (error) {
     console.error('Error with seed data:', error);
-    process.exit(1);
+    throw error;
   }
 };
 
-seedDB();
+if (require.main === module) {
+  connectDB().then(() => {
+    seedDB().then(() => process.exit(0)).catch(() => process.exit(1));
+  });
+}
+
+module.exports = { seedDB };
