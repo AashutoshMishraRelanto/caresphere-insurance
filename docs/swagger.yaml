@@ -1,0 +1,164 @@
+openapi: 3.0.0
+info:
+  title: Insurance Gateway API
+  version: 1.0.0
+  description: API for validating patient insurance coverage and retrieving approved claim limits, intended for Salesforce integration.
+servers:
+  - url: http://localhost:5000/api/v1
+    description: Local server
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    PolicyVerificationRequest:
+      type: object
+      required:
+        - policyNumber
+      properties:
+        policyNumber:
+          type: string
+          example: POL1001
+    PolicyVerificationResponse:
+      type: object
+      properties:
+        policyNumber:
+          type: string
+          example: POL1001
+        policyHolderName:
+          type: string
+          example: John Smith
+        provider:
+          type: string
+          example: Star Health
+        coverageStatus:
+          type: string
+          example: Active
+        approvedClaimLimit:
+          type: number
+          example: 500000
+        availableBalance:
+          type: number
+          example: 450000
+        policyStartDate:
+          type: string
+          format: date
+          example: 2025-01-01
+        policyExpiryDate:
+          type: string
+          format: date
+          example: 2027-12-31
+        planType:
+          type: string
+          example: Premium
+        lastVerificationDate:
+          type: string
+          format: date-time
+          example: 2026-06-18T12:00:00Z
+    LoginRequest:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          example: salesforce_agent
+        password:
+          type: string
+          example: sfdc123
+    LoginResponse:
+      type: object
+      properties:
+        _id:
+          type: string
+        username:
+          type: string
+        token:
+          type: string
+security:
+  - bearerAuth: []
+paths:
+  /auth/login:
+    post:
+      summary: Authenticate and obtain JWT token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Invalid credentials
+  /insurance/verify:
+    post:
+      summary: Validate patient insurance coverage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PolicyVerificationRequest'
+      responses:
+        '200':
+          description: Policy verification successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PolicyVerificationResponse'
+        '404':
+          description: Policy not found
+        '401':
+          description: Unauthorized
+  /insurance/policy/{policyNumber}:
+    get:
+      summary: Get complete policy details
+      parameters:
+        - in: path
+          name: policyNumber
+          schema:
+            type: string
+          required: true
+          description: The policy number
+      responses:
+        '200':
+          description: Successful operation
+        '404':
+          description: Policy not found
+  /insurance/balance/{policyNumber}:
+    get:
+      summary: Get remaining claim balance
+      parameters:
+        - in: path
+          name: policyNumber
+          schema:
+            type: string
+          required: true
+          description: The policy number
+      responses:
+        '200':
+          description: Successful operation
+        '404':
+          description: Policy not found
+  /providers:
+    get:
+      summary: Get all insurance providers
+      responses:
+        '200':
+          description: Successful operation
+  /providers/stats:
+    get:
+      summary: Get insurance provider statistics
+      responses:
+        '200':
+          description: Successful operation
